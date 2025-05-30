@@ -1,5 +1,11 @@
 # @saazpayhq/react
 
+## 0.0.3
+
+### Patch Changes
+
+- cdbd9a1: added dist files
+
 ## 0.0.2
 
 ### Patch Changes

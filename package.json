@@ -25,6 +25,13 @@
   "publishConfig": {
     "access": "public"
   },
+  "files": [
+    "dist",
+    "package.json",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
   "keywords": [
     "pricing",
     "monetization",

@@ -1,0 +1,47 @@
+{
+  "name": "@saazpayhq/react-sdk",
+  "description": "React client for saazpay",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/saazpay/react-sdk"
+  },
+  "bugs": {
+    "url": "https://github.com/saazpay/react-sdk/issues"
+  },
+  "homepage": "https://saazpay.com",
+  "author": "Saazpay",
+  "license": "MIT",
+  "version": "0.0.0",
+  "type": "module",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup",
+    "lint": "tsc",
+    "release": "changeset publish",
+    "publish-package": "pnpm publish --access public"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "pricing",
+    "monetization",
+    "react",
+    "saazpay",
+    "paddle",
+    "saas"
+  ],
+  "devDependencies": {
+    "@changesets/cli": "^2.26.0",
+    "@paddle/paddle-js": "^1.4.0",
+    "@types/react": "^19",
+    "react": "^19.0.0",
+    "tsup": "^6.5.0",
+    "typescript": "^4.9.4"
+  },
+  "peerDependencies": {
+    "react": "*"
+  }
+}

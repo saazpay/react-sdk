@@ -14,6 +14,9 @@ importers:
       '@paddle/paddle-js':
         specifier: ^1.4.0
         version: 1.4.1
+      '@types/node':
+        specifier: ^24.0.8
+        version: 24.0.8
       '@types/react':
         specifier: ^19
         version: 19.1.6
@@ -269,6 +272,9 @@ packages:
 
   '@types/node@12.20.55':
     resolution: {integrity: sha512-J8xLz7q2OFulZ2cyGTLE1TbbZcjpno7FaN6zdJNrgAdrJ+DZzh/uFR6YrTb4C+nXakvud8Q4+rbhoIWlYQbUFQ==}
+
+  '@types/node@24.0.8':
+    resolution: {integrity: sha512-WytNrFSgWO/esSH9NbpWUfTMGQwCGIKfCmNlmFDNiI5gGhgMmEA+V1AEvKLeBNvvtBnailJtkrEa2OIISwrVAA==}
 
   '@types/react@19.1.6':
     resolution: {integrity: sha512-JeG0rEWak0N6Itr6QUx+X60uQmN+5t3j9r/OVDtWzFXKaj6kD1BwJzOksD0FF6iWxZlbE1kB0q9vtnU2ekqa1Q==}
@@ -839,6 +845,9 @@ packages:
     engines: {node: '>=4.2.0'}
     hasBin: true
 
+  undici-types@7.8.0:
+    resolution: {integrity: sha512-9UJ2xGDvQ43tYyVMpuHlsgApydB8ZKfVYTsLDhXkFL/6gfkp+U8xTGdh8pMJv1SpZna0zxG1DwsKZsreLbXBxw==}
+
   universalify@0.1.2:
     resolution: {integrity: sha512-rBJeI5CXAlmy1pV+617WB9J63U6XcazHHF2f2dbJix4XzpUF0RS3Zbj0FGIOCAva5P/d/GBOYaACQ1w+0azUkg==}
     engines: {node: '>= 4.0.0'}
@@ -1138,6 +1147,10 @@ snapshots:
     optional: true
 
   '@types/node@12.20.55': {}
+
+  '@types/node@24.0.8':
+    dependencies:
+      undici-types: 7.8.0
 
   '@types/react@19.1.6':
     dependencies:
@@ -1657,6 +1670,8 @@ snapshots:
       - ts-node
 
   typescript@4.9.5: {}
+
+  undici-types@7.8.0: {}
 
   universalify@0.1.2: {}
 

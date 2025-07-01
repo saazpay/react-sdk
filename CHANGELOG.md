@@ -1,5 +1,11 @@
 # @saazpayhq/react
 
+## 0.0.5
+
+### Patch Changes
+
+- 490a659: fixed package json files
+
 ## 0.0.4
 
 ### Patch Changes

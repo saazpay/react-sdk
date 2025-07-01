@@ -1,5 +1,11 @@
 # @saazpayhq/react
 
+## 0.0.4
+
+### Patch Changes
+
+- 576574b: added cli to install the templates
+
 ## 0.0.3
 
 ### Patch Changes

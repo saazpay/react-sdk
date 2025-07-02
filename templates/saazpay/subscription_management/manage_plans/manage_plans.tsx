@@ -32,6 +32,9 @@ const ManagePlans = ({
     setIsError(false);
     setProrationDetails(null);
     try {
+      if (!existingPlan) {
+        throw new Error("No existing plan found");
+      }
       const data = await previewPlan(planId);
       setProrationDetails(data);
     } catch (error) {
@@ -46,13 +49,13 @@ const ManagePlans = ({
       <div
         className={`${selectedPlan ? "md:col-span-2" : "col-span-3"} w-full`}
       >
-        <div className="flex items-center mb-6">
+        <div className="flex items-center mb-6 bg-white border border-gray-200 rounded-md dark:bg-gray-800 w-max dark:border-gray-700">
           <button
-            className={`px-4 py-1.5 cursor-pointer font-medium rounded-l-md border border-gray-200 dark:border-gray-700
+            className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
             focus:outline-none transition-colors text-sm ${
               selectedTab === "month"
                 ? "bg-[#f36a68] text-white"
-                : "bg-white dark:bg-gray-800 text-gray-700 hover:bg-gray-100 dark:text-gray-200 hover:dark:bg-gray-700"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
             onClick={() => setSelectedTab("month")}
             type="button"
@@ -60,11 +63,11 @@ const ManagePlans = ({
             Monthly
           </button>
           <button
-            className={`px-4 py-1.5 cursor-pointer font-medium rounded-r-md border-r border-t border-b border-gray-200 dark:border-gray-700
+            className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
             focus:outline-none transition-colors text-sm ${
               selectedTab === "year"
                 ? "bg-[#f36a68] text-white"
-                : "bg-white dark:bg-gray-800 text-gray-700 hover:bg-gray-100 dark:text-gray-300 hover:dark:bg-gray-700"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
             onClick={() => setSelectedTab("year")}
             type="button"
@@ -88,7 +91,7 @@ const ManagePlans = ({
                 className={`border-2 rounded-lg overflow-hidden duration-150 ${
                   selectedPlan?.id === plan.id
                     ? "border-[#f36a68]"
-                    : "border-transparent cursor-pointer hover:border-gray-200"
+                    : "border-transparent cursor-pointer hover:border-gray-200 dark:hover:border-gray-700"
                 }`}
               >
                 <PricingCard plan={plan} />
@@ -104,11 +107,13 @@ const ManagePlans = ({
       {selectedPlan && (
         <div className="w-full col-span-1 mt-10 h-max md:mt-14">
           {isLoading ? (
-            <div className="w-full bg-gray-100 border border-gray-300 rounded-lg h-80 animate-pulse" />
+            <div className="w-full bg-gray-100 border border-gray-300 rounded-lg h-80 animate-pulse dark:bg-gray-900 dark:border-gray-600" />
           ) : isError || !prorationDetails ? (
-            <p className="text-sm text-red-500">
-              Unable to fetch proration details. Please try again later.
-            </p>
+            <div className="p-5 border border-gray-200 rounded-lg shadow dark:border-gray-700">
+              <div className="text-sm text-red-400">
+                Unable to fetch proration details. Please try again later.
+              </div>
+            </div>
           ) : (
             <PreviewPlan
               oldPlan={existingPlan!}

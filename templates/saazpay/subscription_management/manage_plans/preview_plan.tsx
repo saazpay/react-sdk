@@ -128,7 +128,7 @@ const PreviewPlan = ({
             ${newPlan.billing_interval}`
           );
         }}
-        className="w-full px-4 py-2 mt-5 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200"
+        className="w-full px-4 py-2 mt-5 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
       >
         Confirm change
       </button>

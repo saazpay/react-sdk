@@ -22,6 +22,13 @@ const PricingPlans = ({ plans, activePlanId }: PricingPlansProps) => {
       initializePaddle({
         token: process.env.NEXT_PUBLIC_PADDLE_CLIENT_KEY ?? "",
         environment: process.env.NEXT_PUBLIC_PADDLE_ENVIRONMENT as Environments,
+        eventCallback: function (data) {
+          if (data.name == "checkout.completed") {
+            setTimeout(() => {
+              window.location.reload();
+            }, 4000);
+          }
+        },
       }).then((paddleInstance: Paddle | undefined) => {
         if (paddleInstance) {
           setPaddle(paddleInstance);
@@ -48,13 +55,13 @@ const PricingPlans = ({ plans, activePlanId }: PricingPlansProps) => {
 
   return (
     <div>
-      <div className="flex items-center mb-6">
+      <div className="flex items-center mb-6 bg-white border border-gray-200 rounded-md dark:bg-gray-800 w-max dark:border-gray-700">
         <button
-          className={`px-4 py-1.5 cursor-pointer font-medium rounded-l-md border border-gray-200 dark:border-gray-700
+          className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
             focus:outline-none transition-colors text-sm ${
               selectedTab === "month"
                 ? "bg-[#f36a68] text-white"
-                : "bg-white dark:bg-gray-800 text-gray-700 hover:bg-gray-100 dark:text-gray-200 hover:dark:bg-gray-700"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
           onClick={() => setSelectedTab("month")}
           type="button"
@@ -62,11 +69,11 @@ const PricingPlans = ({ plans, activePlanId }: PricingPlansProps) => {
           Monthly
         </button>
         <button
-          className={`px-4 py-1.5 cursor-pointer font-medium rounded-r-md border-r border-t border-b border-gray-200 dark:border-gray-700
+          className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
             focus:outline-none transition-colors text-sm ${
               selectedTab === "year"
                 ? "bg-[#f36a68] text-white"
-                : "bg-white dark:bg-gray-800 text-gray-700 hover:bg-gray-100 dark:text-gray-300 hover:dark:bg-gray-700"
+                : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
           onClick={() => setSelectedTab("year")}
           type="button"

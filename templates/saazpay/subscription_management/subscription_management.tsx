@@ -9,16 +9,17 @@ import {
   IUpdatePlan,
 } from "../types";
 import ManagePlans from "./manage_plans/manage_plans";
+import PricingPlans from "../pricing_plans/pricing_plans";
 
 interface SubscriptionAPI {
   getPlans: () => Promise<IPlan[]>;
-  previewPlan: (planId: string) => Promise<IProration>;
-  changePlan: (planId: string) => Promise<IUpdatePlan>;
+  previewPlan: (planId: string, subscriptionId: string) => Promise<IProration>;
+  changePlan: (planId: string, subscriptionId: string) => Promise<IUpdatePlan>;
 }
 
 interface SubscriptionManagementProps {
-  activeSubscription?: ISubscription;
-  managementUrls: IManagementUrl;
+  activeSubscription?: ISubscription | null;
+  managementUrls?: IManagementUrl;
   api: SubscriptionAPI;
 }
 
@@ -31,6 +32,7 @@ const SubscriptionManagement = ({
   const [isError, setIsError] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [plans, setPlans] = useState<IPlan[]>([]);
+  const [isNewPlans, setIsNewPlans] = useState(false);
 
   const fetchPlans = async () => {
     setIsLoading(true);
@@ -50,7 +52,10 @@ const SubscriptionManagement = ({
     setIsError(false);
     setIsProcessing(false);
     try {
-      await api.changePlan(planId);
+      if (!activeSubscription) {
+        throw new Error("No active subscription found");
+      }
+      await api.changePlan(planId, activeSubscription.id);
     } catch (error) {
       setIsError(true);
     } finally {
@@ -73,15 +78,36 @@ const SubscriptionManagement = ({
     confirmChange: null,
   });
 
-  if (state.isChangePlan) {
+  if (isNewPlans) {
     return (
       <div className="relative w-full h-full p-5 overflow-hidden bg-white border border-gray-200 rounded-md shadow dark:border-gray-700 dark:bg-gray-800">
-        {activeSubscription && state.confirmChange ? (
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+            <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[2500] dark:bg-gray-700" />
+            <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[1500] dark:bg-gray-700" />
+            <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[500] dark:bg-gray-700" />
+          </div>
+        ) : isError ? (
+          <div className="text-sm text-red-400">Error loading plans</div>
+        ) : (
+          <PricingPlans
+            plans={plans}
+            activePlanId={activeSubscription?.price.id}
+          />
+        )}
+      </div>
+    );
+  }
+
+  if (state.isChangePlan && activeSubscription) {
+    return (
+      <div className="relative w-full h-full p-5 overflow-hidden bg-white border border-gray-200 rounded-md shadow dark:border-gray-700 dark:bg-gray-800">
+        {state.confirmChange ? (
           <div className="relative">
             {isProcessing && (
-              <div className="absolute bottom-0 right-0 flex items-center px-3 py-2 text-xs font-medium text-orange-800 bg-orange-100 rounded-md gap-x-2">
+              <div className="absolute bottom-0 right-0 flex items-center px-3 py-2 text-xs font-medium text-orange-800 bg-orange-100 rounded-md gap-x-2 dark:bg-yellow-900 dark:border-yellow-800 dark:text-yellow-200">
                 <svg
-                  className="w-4 h-4 fill-orange-800"
+                  className="w-4 h-4 fill-orange-800 dark:fill-yellow-200"
                   xmlns="http://www.w3.org/2000/svg"
                   x="0px"
                   y="0px"
@@ -95,19 +121,19 @@ const SubscriptionManagement = ({
               </div>
             )}
 
-            <div className="mb-5">
+            <div>
               <h6 className="font-medium">Confirm plan change</h6>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-300">
                 Are you sure you want to change your plan. You can always
                 upgrade/downgrade later.
               </p>
-              <div className="flex flex-wrap items-center mt-2 text-sm text-gray-500 gap-x-2">
+              <div className="flex flex-wrap items-center mt-2 text-sm text-gray-500 gap-x-2 dark:text-gray-300">
                 You're changing from{" "}
-                <span className="px-2 py-1 font-semibold rounded-md bg-slate-100 dark:bg-slate-800">
+                <span className="px-2 py-1 font-semibold rounded-md bg-slate-100 dark:bg-slate-900">
                   {state.confirmChange.from}
                 </span>{" "}
                 to
-                <span className="px-2 py-1 font-semibold rounded-md bg-slate-100 dark:bg-slate-800">
+                <span className="px-2 py-1 font-semibold rounded-md bg-slate-100 dark:bg-slate-900">
                   {state.confirmChange.to}
                 </span>{" "}
               </div>
@@ -116,7 +142,7 @@ const SubscriptionManagement = ({
             <div className="flex items-center gap-1">
               <button
                 disabled={isProcessing}
-                className="px-4 py-2 mt-5 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer w-max hover:bg-gray-200"
+                className="px-4 py-2 mt-5 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer w-max hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => {
                   setState({
                     isChangePlan: true,
@@ -128,7 +154,7 @@ const SubscriptionManagement = ({
               </button>
               <button
                 disabled={isLoading || isProcessing}
-                className="px-4 py-2 mt-5 text-sm font-medium text-white duration-150 bg-[#f36a68] rounded-md cursor-pointer w-max hover:bg-[#f36a68]/80"
+                className="px-4 py-2 mt-5 text-sm font-medium text-white duration-150 bg-[#f36a68] rounded-md cursor-pointer w-max hover:bg-[#f36a68]/80 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => {
                   if (state.confirmChange && state.confirmChange.planId) {
                     changePlan(state.confirmChange.planId);
@@ -154,7 +180,7 @@ const SubscriptionManagement = ({
                 Dashboard
               </button>
               <svg
-                className="w-3 h-3 text-gray-500"
+                className="w-3 h-3 fill-gray-500 dark:fill-gray-300"
                 xmlns="http://www.w3.org/2000/svg"
                 width="16"
                 height="16"
@@ -168,14 +194,12 @@ const SubscriptionManagement = ({
             </div>
             {isLoading ? (
               <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
-                <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[2500]" />
-                <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[1500]" />
-                <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[500]" />
+                <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[2500] dark:bg-gray-700" />
+                <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[1500] dark:bg-gray-700" />
+                <div className="bg-gray-200 h-60 rounded-md animate-pulse duration-[500] dark:bg-gray-700" />
               </div>
             ) : isError ? (
-              <div className="flex items-center justify-center w-full h-full p-5 text-sm text-red-500 bg-red-100 rounded-md dark:bg-red-900 dark:text-red-300">
-                Error loading plans
-              </div>
+              <div className="text-sm text-red-400">Error loading plans</div>
             ) : (
               <ManagePlans
                 existingPlan={plans.find(
@@ -184,7 +208,9 @@ const SubscriptionManagement = ({
                 plans={plans.filter(
                   (plan) => plan.id != activeSubscription?.price.id
                 )}
-                previewPlan={api.previewPlan}
+                previewPlan={(planId: string) =>
+                  api.previewPlan(planId, activeSubscription?.id)
+                }
                 onConfirm={async (from, to, selectedPlan) => {
                   setState({
                     isChangePlan: true,
@@ -205,14 +231,8 @@ const SubscriptionManagement = ({
 
   return (
     <div className="w-full h-full p-5 overflow-hidden bg-white border border-gray-200 rounded-md shadow dark:border-gray-700 dark:bg-gray-800">
-      {activeSubscription ? (
+      {activeSubscription && managementUrls ? (
         <div className="relative grid grid-cols-1 gap-10 sm:grid-cols-2 md:gap-20">
-          {/* {isTimeout && (
-              <div className="absolute bottom-0 flex items-center px-3 py-2 text-xs font-medium bg-gray-200 rounded-md right-5 gap-x-2 text-black/50">
-                <Loader className="w-4 h-4 text-black/40" />
-                subscription details are being updated
-              </div>
-            )} */}
           <div>
             {activeSubscription.product.image_url && (
               <img
@@ -271,7 +291,7 @@ const SubscriptionManagement = ({
                 });
                 fetchPlans();
               }}
-              className="w-full px-4 py-2 mt-5 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200"
+              className="w-full px-4 py-2 mt-5 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
             >
               Change plan
             </button>
@@ -296,13 +316,13 @@ const SubscriptionManagement = ({
             <hr />
 
             {activeSubscription.scheduled_change && (
-              <div className="w-full p-2 mt-5 bg-orange-100 border-orange-200 shadow-sm dark:bg-orange-900 dark:border-orange-800">
+              <div className="w-full p-2 mt-5 bg-orange-100 border-orange-200 rounded-md dark:bg-yellow-900 dark:border-yellow-800">
                 <div className="flex items-start justify-between p-2">
                   <div>
                     <h6 className="text-sm font-medium">
                       Subscription scheduled
                     </h6>
-                    <p className="text-xs text-gray-500">
+                    <p className="text-xs text-gray-500 dark:text-gray-300">
                       This subscription is scheduled to be canceled on{" "}
                       {formatDateTime(activeSubscription.scheduled_change)}
                     </p>
@@ -313,7 +333,7 @@ const SubscriptionManagement = ({
 
             <div className="flex flex-col mt-5 gap-y-2">
               <a href={managementUrls.customerPortal} target="_blank">
-                <button className="w-full px-4 py-2 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200">
+                <button className="w-full px-4 py-2 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600">
                   Manage subscription
                 </button>
               </a>
@@ -323,7 +343,7 @@ const SubscriptionManagement = ({
                   target="_blank"
                   className="w-full"
                 >
-                  <button className="w-full px-4 py-2 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200">
+                  <button className="w-full px-4 py-2 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600">
                     Update payment method
                   </button>
                 </a>
@@ -343,17 +363,15 @@ const SubscriptionManagement = ({
       ) : (
         <div className="flex flex-col items-center justify-center h-full py-10">
           <h3 className="text-sm font-semibold">No subscription found</h3>
-          <p className="mb-2 text-xs text-gray-500">
+          <p className="mb-2 text-xs text-gray-500 dark:text-gray-300">
             You don&apos;t have any active subscriptions.
           </p>
           <button
             onClick={() => {
-              setState({
-                isChangePlan: true,
-                confirmChange: null,
-              });
+              fetchPlans();
+              setIsNewPlans(true);
             }}
-            className="px-4 py-2 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer w-max hover:bg-gray-200"
+            className="px-4 py-2 text-sm font-medium duration-150 bg-gray-100 rounded-md cursor-pointer w-max hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600"
           >
             Select plan
           </button>

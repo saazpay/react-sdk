@@ -8,9 +8,14 @@ import { IPlan } from "../types";
 interface PricingPlansProps {
   plans: IPlan[];
   activePlanId?: string;
+  settings?: {
+    primaryColor?: string;
+    alignment?: "left" | "center" | "right";
+  };
 }
 
-const PricingPlans = ({ plans, activePlanId }: PricingPlansProps) => {
+const PricingPlans = ({ plans, activePlanId, settings }: PricingPlansProps) => {
+  const { primaryColor = "#f36a68", alignment = "left" } = settings || {};
   const [paddle, setPaddle] = useState<Paddle | null>(null);
   const [selectedTab, setSelectedTab] = useState("month");
   const filteredPlans = plans?.filter(
@@ -38,7 +43,7 @@ const PricingPlans = ({ plans, activePlanId }: PricingPlansProps) => {
   }, []);
 
   const openCheckout = (plan: IPlan) => {
-    // TODO: Implement your custom checkout logic if needed here
+    // NOTE: Implement your custom checkout logic if needed here
     if (paddle) {
       paddle.Checkout.open({
         items: [{ priceId: plan.id, quantity: 1 }],
@@ -55,31 +60,46 @@ const PricingPlans = ({ plans, activePlanId }: PricingPlansProps) => {
 
   return (
     <div>
-      <div className="flex items-center mb-6 bg-white border border-gray-200 rounded-md dark:bg-gray-800 w-max dark:border-gray-700">
-        <button
-          className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
+      <div
+        style={{
+          justifyContent: alignment,
+        }}
+        className="flex mb-6"
+      >
+        <div className="flex items-center bg-white border border-gray-200 rounded-md dark:bg-gray-800 w-max dark:border-gray-700">
+          <button
+            style={{
+              backgroundColor: selectedTab === "month" ? primaryColor : "",
+              color: selectedTab === "month" ? "white" : "",
+            }}
+            className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
             focus:outline-none transition-colors text-sm ${
               selectedTab === "month"
-                ? "bg-[#f36a68] text-white"
+                ? "text-white"
                 : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
-          onClick={() => setSelectedTab("month")}
-          type="button"
-        >
-          Monthly
-        </button>
-        <button
-          className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
+            onClick={() => setSelectedTab("month")}
+            type="button"
+          >
+            Monthly
+          </button>
+          <button
+            style={{
+              backgroundColor: selectedTab === "year" ? primaryColor : "",
+              color: selectedTab === "year" ? "white" : "",
+            }}
+            className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
             focus:outline-none transition-colors text-sm ${
               selectedTab === "year"
-                ? "bg-[#f36a68] text-white"
+                ? "text-white"
                 : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
-          onClick={() => setSelectedTab("year")}
-          type="button"
-        >
-          Yearly
-        </button>
+            onClick={() => setSelectedTab("year")}
+            type="button"
+          >
+            Yearly
+          </button>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 md:grid-cols-3">
         {filteredPlans?.length > 0 ? (
@@ -87,6 +107,7 @@ const PricingPlans = ({ plans, activePlanId }: PricingPlansProps) => {
             <PricingCard
               key={plan.id}
               plan={plan}
+              primaryColor={primaryColor}
               onClick={activePlanId ? null : openCheckout}
             />
           ))

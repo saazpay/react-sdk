@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PricingPlans from "../pricing_plans/pricing_plans";
 import {
   IManagementUrl,
   IPlan,
@@ -9,7 +10,6 @@ import {
   IUpdatePlan,
 } from "../types";
 import ManagePlans from "./manage_plans/manage_plans";
-import PricingPlans from "../pricing_plans/pricing_plans";
 
 interface SubscriptionAPI {
   getPlans: () => Promise<IPlan[]>;
@@ -18,16 +18,21 @@ interface SubscriptionAPI {
 }
 
 interface SubscriptionManagementProps {
+  api: SubscriptionAPI;
   activeSubscription?: ISubscription | null;
   managementUrls?: IManagementUrl;
-  api: SubscriptionAPI;
+  settings?: {
+    primaryColor?: string;
+  };
 }
 
 const SubscriptionManagement = ({
+  api,
   activeSubscription,
   managementUrls,
-  api,
+  settings,
 }: SubscriptionManagementProps) => {
+  const { primaryColor = "#f36a68" } = settings || {};
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -154,7 +159,10 @@ const SubscriptionManagement = ({
               </button>
               <button
                 disabled={isLoading || isProcessing}
-                className="px-4 py-2 mt-5 text-sm font-medium text-white duration-150 bg-[#f36a68] rounded-md cursor-pointer w-max hover:bg-[#f36a68]/80 disabled:opacity-50 disabled:cursor-not-allowed"
+                style={{
+                  backgroundColor: primaryColor,
+                }}
+                className="px-4 py-2 mt-5 text-sm font-medium text-white duration-150 rounded-md cursor-pointer w-max hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
                 onClick={() => {
                   if (state.confirmChange && state.confirmChange.planId) {
                     changePlan(state.confirmChange.planId);
@@ -221,6 +229,7 @@ const SubscriptionManagement = ({
                     },
                   });
                 }}
+                primaryColor={primaryColor}
               />
             )}
           </div>

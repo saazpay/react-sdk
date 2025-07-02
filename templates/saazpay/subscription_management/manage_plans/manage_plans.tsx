@@ -7,6 +7,7 @@ interface ManagePlansProps {
   plans: IPlan[];
   previewPlan: (planId: string) => Promise<IProration>;
   onConfirm: (from: string, to: string, selectedPlan: IPlan) => void;
+  primaryColor: string;
   existingPlan?: IPlan;
 }
 
@@ -14,6 +15,7 @@ const ManagePlans = ({
   plans,
   previewPlan,
   onConfirm,
+  primaryColor,
   existingPlan,
 }: ManagePlansProps) => {
   const [selectedTab, setSelectedTab] = useState("month");
@@ -51,10 +53,14 @@ const ManagePlans = ({
       >
         <div className="flex items-center mb-6 bg-white border border-gray-200 rounded-md dark:bg-gray-800 w-max dark:border-gray-700">
           <button
+            style={{
+              backgroundColor: selectedTab === "month" ? primaryColor : "",
+              color: selectedTab === "month" ? "white" : "",
+            }}
             className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
             focus:outline-none transition-colors text-sm ${
               selectedTab === "month"
-                ? "bg-[#f36a68] text-white"
+                ? "text-white"
                 : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
             onClick={() => setSelectedTab("month")}
@@ -63,10 +69,14 @@ const ManagePlans = ({
             Monthly
           </button>
           <button
+            style={{
+              backgroundColor: selectedTab === "year" ? primaryColor : "",
+              color: selectedTab === "year" ? "white" : "",
+            }}
             className={`px-4 py-1.5 cursor-pointer font-medium rounded-md
             focus:outline-none transition-colors text-sm ${
               selectedTab === "year"
-                ? "bg-[#f36a68] text-white"
+                ? "text-white"
                 : "bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-200"
             }`}
             onClick={() => setSelectedTab("year")}
@@ -88,13 +98,15 @@ const ManagePlans = ({
                   setSelectedPlan(plan);
                   previewProration(plan.id);
                 }}
+                style={{
+                  borderColor: selectedPlan?.id === plan.id ? primaryColor : "",
+                }}
                 className={`border-2 rounded-lg overflow-hidden duration-150 ${
-                  selectedPlan?.id === plan.id
-                    ? "border-[#f36a68]"
-                    : "border-transparent cursor-pointer hover:border-gray-200 dark:hover:border-gray-700"
+                  selectedPlan?.id !== plan.id &&
+                  "border-transparent cursor-pointer hover:border-gray-200 dark:hover:border-gray-700"
                 }`}
               >
-                <PricingCard plan={plan} />
+                <PricingCard plan={plan} primaryColor={primaryColor} />
               </div>
             ))
           ) : (

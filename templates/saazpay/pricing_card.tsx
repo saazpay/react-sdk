@@ -5,9 +5,10 @@ import { IPlan } from "./types";
 
 interface PricingCardProps {
   plan: IPlan;
+  primaryColor: string;
   onClick?: ((plan: IPlan) => void) | null;
 }
-const PricingCard = ({ plan, onClick }: PricingCardProps) => {
+const PricingCard = ({ plan, onClick, primaryColor }: PricingCardProps) => {
   return (
     <div className="relative flex flex-col h-full p-5 overflow-hidden bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-900 dark:border-gray-700">
       <div>
@@ -47,7 +48,7 @@ const PricingCard = ({ plan, onClick }: PricingCardProps) => {
         <div className="mt-1 text-xs font-medium">
           {(plan.trial_frequency || plan.trial_interval) &&
             plan.trial_frequency != 0 && (
-              <div className="bg-[#f36a68]/30 text-black dark:text-white font-normal px-2 py-1 rounded w-max">
+              <div className="px-2 py-1 font-normal text-black bg-gray-300 rounded dark:bg-gray-900 dark:text-white w-max">
                 {plan.trial_frequency} {plan.trial_interval}(s) trial period
               </div>
             )}
@@ -56,8 +57,11 @@ const PricingCard = ({ plan, onClick }: PricingCardProps) => {
 
       {onClick && (
         <button
+          style={{
+            backgroundColor: primaryColor,
+          }}
           onClick={() => onClick(plan)}
-          className="mt-4 w-full cursor-pointer bg-[#f36a68] text-white hover:opacity-90 px-4 py-1.5 rounded-md text-sm"
+          className="mt-4 w-full cursor-pointer text-white hover:opacity-90 px-4 py-1.5 rounded-md text-sm"
         >
           Select plan
         </button>
